@@ -9,6 +9,7 @@ import (
 func main() {
 	router := mux.NewRouter()
 	router.HandleFunc("/signup", signupHandler).Methods("POST")
+	router.HandleFunc("/login", loginHandler).Methods("POST")
 
 	http.Handle("/", router)
 	http.ListenAndServe(":9000", router)
