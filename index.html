@@ -17,21 +17,23 @@
 
   const customFormSubmission = function (e) {
     e.preventDefault();
-    const action = this.action.replace('5500', '9000');
+
+    const form = this;
+    const action = form.action.replace('5500', '9000');
     const xhr = new XMLHttpRequest();
-    xhr.open(this.method, action);
+    xhr.open(form.method, action);
     xhr.onload = function () {
-      handleResponse(xhr);
+      handleResponse(xhr, form);
     }
     xhr.onerror = function () {
-      handleResponse(xhr);
+      handleResponse(xhr, form);
     }
 
     const json = {};
-    const formData = new FormData(this);
+    const formData = new FormData(form);
     formData.forEach((value, key) => json[key] = value);
     xhr.send(JSON.stringify(json));
-    
+
     changeDisableAttributeBySelector('input,button', true);
   }
 
@@ -41,9 +43,9 @@
     });
   }
 
-  const handleResponse = function(xhr) {
+  const handleResponse = function(xhr, form) {
     if (xhr.readyState === 4) {
-      document.querySelectorAll('.message').forEach(function (element) {
+      form.querySelectorAll('.message').forEach(function (element) {
         if (xhr.status === 200) {
           
         } else {
@@ -78,6 +80,20 @@
     <input type="password" name="confirm-password" required="true">
     <br>
     <button type="submit">Sign Up</button>
+    <br>
+    <span class="message"></span>
+    <br>
+    <strong>Powered by AuthenticateMe.ga</strong>
+  </form>
+  <form name="login-form" method="POST" action="/login">
+    <h1>Log In</h1>
+    <label for="username">Username</label>
+    <input type="text" name="username" required="true">
+    <br>
+    <label for="password">Password</label>
+    <input type="password" name="password" required="true">
+    <br>
+    <button type="submit">Log In</button>
     <br>
     <span class="message"></span>
     <br>
