@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Authentication</title>
+</head>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('form').forEach(function(form) {
+      form.addEventListener('submit', customFormSubmission, false);
+    });
+  });
+
+  const customFormSubmission = function (e) {
+    e.preventDefault();
+    const action = this.action.replace('5500', '9000');
+    const xhr = new XMLHttpRequest();
+    xhr.open(this.method, action);
+    xhr.onload = function () {
+      handleResponse(xhr);
+    }
+    xhr.onerror = function () {
+      handleResponse(xhr);
+    }
+
+    const json = {};
+    const formData = new FormData(this);
+    formData.forEach((value, key) => json[key] = value);
+    xhr.send(JSON.stringify(json));
+    
+    changeDisableAttributeBySelector('input,button', true);
+  }
+
+  const changeDisableAttributeBySelector = function(selector, value) {
+    document.querySelectorAll(selector).forEach(function(element) {
+      element.disabled = value;
+    });
+  }
+
+  const handleResponse = function(xhr) {
+    if (xhr.readyState === 4) {
+      document.querySelectorAll('.message').forEach(function (element) {
+        if (xhr.status === 200) {
+          
+        } else {
+          element.classList.add('error-color');
+        }
+        if (xhr.responseText !== '') {
+          const json = JSON.parse(xhr.responseText);
+          if (typeof json.body !== 'undefined') {
+            element.innerHTML = json.body;
+            element.scrollIntoView();
+          }
+        } else {
+          element.innerHTML = 'Error connecting to server. Please try again later.';
+          element.scrollIntoView();
+        }
+      });
+      changeDisableAttributeBySelector('input,button', false);
+    }
+  }
+</script>
+
+<body>
+  <form name="signup-form" method="POST" action="/signup">
+    <h1>Sign Up</h1>
+    <label for="username">Username</label>
+    <input type="text" name="username" required="true">
+    <br>
+    <label for="password">Password</label>
+    <input type="password" name="password" required="true">
+    <br>
+    <label for="confirm-password">Confirm Password</label>
+    <input type="password" name="confirm-password" required="true">
+    <br>
+    <button type="submit">Sign Up</button>
+    <br>
+    <span class="message"></span>
+    <br>
+    <strong>Powered by AuthenticateMe.ga</strong>
+  </form>
+</body>
+
+</html>
